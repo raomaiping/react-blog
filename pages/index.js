@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Head from "next/head";
 import Header from "../components/Header";
 import Author from "../components/Author";
+import Advert from "../components/Advert";
 import { Row, Col, List } from "antd";
 import {CalendarOutlined,YoutubeOutlined,FireOutlined} from "@ant-design/icons";
 import '../public/style/pages/index.css'
@@ -56,6 +57,7 @@ const Home = () => {
         </Col>
         <Col className="comm-right" xs={0} sm={0} md={7} lg={5} xl={4}>
           <Author />
+          <Advert />
         </Col>
       </Row>
     </div>
