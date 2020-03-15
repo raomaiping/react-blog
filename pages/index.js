@@ -3,6 +3,7 @@ import Head from "next/head";
 import Header from "../components/Header";
 import Author from "../components/Author";
 import Advert from "../components/Advert";
+import Footer from "../components/Footer";
 import { Row, Col, List } from "antd";
 import {CalendarOutlined,YoutubeOutlined,FireOutlined} from "@ant-design/icons";
 import '../public/style/pages/index.css'
@@ -60,6 +61,8 @@ const Home = () => {
           <Advert />
         </Col>
       </Row>
+      
+      <Footer />
     </div>
   );
 };
