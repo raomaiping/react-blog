@@ -5,11 +5,12 @@ import Author from "../components/Author";
 import Advert from "../components/Advert";
 import Footer from "../components/Footer";
 import '../public/style/pages/detailed.css'
-import {Row,Col,Breadcrumb} from 'antd'
+import {Row,Col,Breadcrumb,Affix} from 'antd'
+import MarkNav from 'markdown-navbar'
 import ReactMarkdown from 'react-markdown'
 import {CalendarOutlined,YoutubeOutlined,FireOutlined} from "@ant-design/icons";
 const Detailed = () =>{
-  let markdown='# P01:课程介绍和环境搭建\n' +
+  let markdown='# p01:课程介绍和环境搭建\n' +
   '[ **M** ] arkdown + E [ **ditor** ] = **Mditor**  \n' +
   '> Mditor 是一个简洁、易于集成、方便扩展、期望舒服的编写 markdown 的编辑器，仅此而已... \n\n' +
    '**这是加粗的文字**\n\n' +
@@ -80,6 +81,16 @@ const Detailed = () =>{
             <Col className="comm-right" xs={0} sm={0} md={7} lg={5} xl={4}>
               <Author />
               <Advert />
+              <Affix offsetTop={5}>
+                <div className="detailed-nav comm-box">
+                    <div className="nav-title">文章目录</div>
+                    <MarkNav 
+                      className="article-menu"
+                      source={markdown}
+                      ordered={false}
+                    />
+                </div>
+              </Affix>
             </Col>
       </Row>
   
