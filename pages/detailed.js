@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head'
+import axios from 'axios'
 import Header from '../components/Header'
 import Author from "../components/Author";
 import Advert from "../components/Advert";
@@ -97,6 +98,22 @@ const Detailed = () =>{
       <Footer />
     </div>
     )
+}
+
+Detailed.getInitialProps = async(context)=>{
+
+  console.log(context.query.id);
+
+  let id = context.query.id
+
+  const promise = new Promise((resolve)=>{
+    axios('http://127.0.0.1:7001/default/getArticleById')
+    .then((res)=>{
+      console.log(res);
+      resolve(res.data.data[0])
+    })
+  })
+  return await promise
 }
 
 export default Detailed
