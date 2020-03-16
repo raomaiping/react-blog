@@ -7,11 +7,11 @@ import Author from "../components/Author";
 import Advert from "../components/Advert";
 import Footer from "../components/Footer";
 import { Row, Col, List } from "antd";
-import {CalendarOutlined,YoutubeOutlined,FireOutlined} from "@ant-design/icons";
+import {CalendarOutlined,YoutubeOutlined,FireOutlined } from "@ant-design/icons";
 import '../public/style/pages/index.css'
+import servicePath from '../config/apiUrl'
 const Home = (list) => {
   const [mylist, setMylist] = useState(list.data);
-
   return (
     <div>
       <Head>
@@ -56,7 +56,7 @@ const Home = (list) => {
 
 Home.getInitialProps = async ()=>{
   const promise = new Promise((reslove) =>{
-    axios("http://127.0.0.1:7001/default/getArticleList")
+    axios(servicePath.getArticleList)
     .then((res)=>{
       reslove(res.data)
     })

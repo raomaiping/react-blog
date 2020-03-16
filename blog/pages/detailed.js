@@ -12,6 +12,7 @@ import 'highlight.js/styles/monokai-sublime.css'
 import {Row,Col,Breadcrumb,Affix} from 'antd'
 import {CalendarOutlined,YoutubeOutlined,FireOutlined} from "@ant-design/icons";
 import Tocify from '../components/tocify.tsx'
+import servicePath from '../config/apiUrl'
 const Detailed = (props) =>{
     const tocify = new Tocify()
     const renderer = new marked.Renderer()
@@ -87,7 +88,7 @@ Detailed.getInitialProps = async(context)=>{
   let id = context.query.id
 
   const promise = new Promise((resolve)=>{
-    axios('http://127.0.0.1:7001/default/getArticleById/'+ id)
+    axios(servicePath.getArticleById+ id)
     .then((res)=>{
       resolve(res.data.data[0])
     })
