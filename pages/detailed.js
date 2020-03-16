@@ -10,13 +10,16 @@ import marked from 'marked'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai-sublime.css'
 import {Row,Col,Breadcrumb,Affix} from 'antd'
-import MarkNav from 'markdown-navbar'
 import {CalendarOutlined,YoutubeOutlined,FireOutlined} from "@ant-design/icons";
-
+import Tocify from '../components/tocify.tsx'
 const Detailed = (props) =>{
-
+    const tocify = new Tocify()
     const renderer = new marked.Renderer()
 
+    renderer.heading = (text,level,raw)=>{
+      const anchor = tocify.add(text,level,raw)
+      return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n` 
+    }
     marked.setOptions({
       renderer:renderer,
       gfm:true,
@@ -68,11 +71,7 @@ const Detailed = (props) =>{
               <Affix offsetTop={5}>
                 <div className="detailed-nav comm-box">
                     <div className="nav-title">文章目录</div>
-                    <MarkNav 
-                      className="article-menu"
-                      source={html}
-                      ordered={false}
-                    />
+                    {tocify && tocify.render()}
                 </div>
               </Affix>
             </Col>
