@@ -23,6 +23,11 @@ class MainContoller extends Contoller{
             this.ctx.body={data:'登录失败'}
         } 
     }
+
+    async getTypeInfo(){
+        const resType = await this.app.mysql.select('type')
+        this.ctx.body={data:resType}
+    }
 }
 
 module.exports = MainContoller;
