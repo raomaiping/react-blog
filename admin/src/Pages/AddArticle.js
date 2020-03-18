@@ -16,12 +16,18 @@ function AddArticle(props) {
   const [introducemd, setIntroducemd] = useState(); //简介的markdown内容
   const [introducehtml, setIntroducehtml] = useState("等待编辑"); //简介的html内容
   const [showDate, setShowDate] = useState(); //发布日期
-  const [updateDate, setUpdateDate] = useState(); //修改日志的日期
   const [typeInfo, setTypeInfo] = useState([]); // 文章类别信息
   const [selectedType, setSelectType] = useState("文章类别"); //选择的文章类别
 
   useEffect(() => {
     getTypeInfo();
+
+    //获取文章id
+    let tmpId = props.match.params.id
+    if(tmpId){
+      setArticleId(tmpId)
+      getArticleById(tmpId)
+    }
   }, []);
   marked.setOptions({
     renderer,
@@ -64,6 +70,23 @@ function AddArticle(props) {
     setSelectType(value);
   };
 
+  const getArticleById =(id)=>{
+    axios(servicePath.getArticleById+id,{withCredentials:true}).then(
+      res=>{
+        let articleInfo = res.data.data[0]
+        setArticleTitle(articleInfo.title)
+        setArticleContent(articleInfo.article_content)
+        let html = marked(articleInfo.article_content)
+        setMarkdownContent(html)
+        setIntroducemd(articleInfo.introduce)
+        let tmpInt = marked(articleInfo.introduce)
+        setIntroducehtml(tmpInt)
+        setShowDate(articleInfo.addTime)
+        setSelectType(articleInfo.type_id)
+      }
+    )
+  }
+
   const saveArticle = () => {
     if (!selectedType) {
       message.error("必须选择文章类型");
@@ -80,8 +103,53 @@ function AddArticle(props) {
     }else if(!showDate){
         message.error('发布日期不能为空')
         return false
+    }else if(selectedType == '文章类别'){
+      message.error('请选择文章类别')
+      return false
     }
-    message.success('检验通过')
+    
+    let dataProps = {}
+    dataProps.type_id = selectedType
+    dataProps.title = articleTitle
+    dataProps.article_content = articleContent
+    dataProps.introduce = introducemd
+    let dataText = showDate.replace('-','/')
+    dataProps.addTime = (new Date(dataText).getTime())/1000
+
+    if(articleId == 0){
+      dataProps.view_count = 0
+      axios({
+        method:'post',
+        url:servicePath.addArticle,
+        data:dataProps,
+        withCredentials:true
+      }).then(
+        res=>{
+            setArticleId(res.data.insertId)
+            if(res.data.isSuccess){
+              message.success('文章添加成功')
+            }else{
+              message.error('文章添加失败')
+            }
+        }
+      )
+    }else{
+      dataProps.id=articleId
+      axios({
+        method:'post',
+        url:servicePath.updateArticle,
+        data:dataProps,
+        withCredentials:true
+      }).then(
+        res=>{
+          if(res.data.isSuccess){
+            message.success('文章保存成功')
+          }else{
+            message.error('文章保存失败')
+          }
+        }
+      )
+    }
   };
   return (
     <Row gutter={5}>
@@ -118,6 +186,7 @@ function AddArticle(props) {
             <TextArea
               className="markdown-content"
               rows={35}
+              value={articleContent}
               placeholder="文章内容"
               onChange={changeContent}
             />
@@ -142,6 +211,7 @@ function AddArticle(props) {
             <TextArea
               rows={4}
               placeholder="文章简介"
+              value={introducemd}
               onChange={changeIntroduce}
             ></TextArea>
             <br />
