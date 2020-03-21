@@ -2,17 +2,17 @@ import React, { useState } from "react";
 import { Layout, Menu, Breadcrumb } from "antd";
 import "../static/css/AdminIndex.css";
 import ArticleList from "./ArticleList";
+import AddType from './AddType'
 import {
   DesktopOutlined,
   PieChartOutlined,
   FileOutlined,
-  TeamOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import { Route, Router } from "react-router-dom";
+import { Route } from "react-router-dom";
 import AddArticle from "./AddArticle";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
 function AdminIndex(props) {
@@ -38,9 +38,9 @@ function AdminIndex(props) {
             <PieChartOutlined />
             <span>工作台</span>
           </Menu.Item>
-          <Menu.Item key="2">
+          <Menu.Item key="2" onClick ={()=>{props.history.push('/index/type')}}>
             <DesktopOutlined />
-            <span>添加文章</span>
+            <span>添加分类</span>
           </Menu.Item>
           <SubMenu
             key="sub1"
@@ -56,8 +56,9 @@ function AdminIndex(props) {
             <Menu.Item key="articleList">文章列表</Menu.Item>
           </SubMenu>
           <Menu.Item key="9">
+          
             <FileOutlined />
-            留言管理
+           <span>留言管理</span>
           </Menu.Item>
         </Menu>
       </Sider>
@@ -76,6 +77,7 @@ function AdminIndex(props) {
               <Route path="/index/add/" exact component={AddArticle} />
               <Route path="/index/list" exact component={ArticleList} />
               <Route path="/index/add/:id" exact component={AddArticle} />
+              <Route path="/index/type" exact component={AddType} />
             </div>
           </div>
         </Content>

@@ -2,21 +2,22 @@ import React from 'react';
 import Head from 'next/head'
 import Header from '../components/Header'
 import Author from "../components/Author";
-import Advert from "../components/Advert";
 import Footer from "../components/Footer";
 import '../public/style/pages/detailed.css'
 import axios from 'axios'
 import marked from 'marked'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai-sublime.css'
-import {Row,Col,Breadcrumb,Affix} from 'antd'
+import {Row,Col,Breadcrumb,Affix,BackTop} from 'antd'
 import {CalendarOutlined,YoutubeOutlined,FireOutlined} from "@ant-design/icons";
 import Tocify from '../components/tocify.tsx'
 import servicePath from '../config/apiUrl'
 const Detailed = (props) =>{
     const tocify = new Tocify()
     const renderer = new marked.Renderer()
-
+    const getLocalTime =(nS)=> {     
+      return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');     
+   }
     renderer.heading = (text,level,raw)=>{
       const anchor = tocify.add(text,level,raw)
       return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n` 
@@ -37,7 +38,7 @@ const Detailed = (props) =>{
     return(
       <div>
       <Head>
-        <title>Detailed</title>
+        <title>前端小菜鸟吖|博客详情</title>
       </Head>
       <Header />
       <Row className="comm-main" type="flex" justify="center">
@@ -46,8 +47,8 @@ const Detailed = (props) =>{
                   <div className="bread-div">
                     <Breadcrumb>
                       <Breadcrumb.Item><a href="/">首页</a></Breadcrumb.Item>
-                      <Breadcrumb.Item><a href="/list">视频教程</a></Breadcrumb.Item>
-                      <Breadcrumb.Item><a href="/">xxxx</a></Breadcrumb.Item>
+                      <Breadcrumb.Item>{props.typeName}</Breadcrumb.Item>
+                      <Breadcrumb.Item>{props.title}</Breadcrumb.Item>
                     </Breadcrumb>
                   </div>
                   <div>
@@ -55,9 +56,9 @@ const Detailed = (props) =>{
                         react实战视频教程
                     </div>
                     <div className="list-icon center">
-                      <span><CalendarOutlined /> 2020-03-15</span>
-                      <span><YoutubeOutlined /> 视频教程</span>
-                      <span><FireOutlined /> 9999人</span>
+                      <span><CalendarOutlined />{getLocalTime(props.addTime)}</span>
+                      <span><YoutubeOutlined /> {props.typeName}</span>
+                      <span><FireOutlined />  {props.view_count}人</span>
                     </div>
                     <div className="detailed-content"
                       dangerouslySetInnerHTML={{__html:html}}
@@ -68,7 +69,6 @@ const Detailed = (props) =>{
             </Col>
             <Col className="comm-right" xs={0} sm={0} md={7} lg={5} xl={4}>
               <Author />
-              <Advert />
               <Affix offsetTop={5}>
                 <div className="detailed-nav comm-box">
                     <div className="nav-title">文章目录</div>
@@ -79,6 +79,7 @@ const Detailed = (props) =>{
       </Row>
   
       <Footer />
+      <BackTop />
     </div>
     )
 }
@@ -90,7 +91,7 @@ Detailed.getInitialProps = async(context)=>{
   const promise = new Promise((resolve)=>{
     axios(servicePath.getArticleById+ id)
     .then((res)=>{
-      resolve(res.data.data[0])
+      resolve(res.data.data)
     })
   })
   return await promise

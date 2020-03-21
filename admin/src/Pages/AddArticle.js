@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import marked from "marked";
 import "../static/css/AddArticle.css";
 import { Row, Col, Input, Select, Button, DatePicker, message } from "antd";
-import axios from "axios";
+import axios from "../config/http";
 import servicePath from "../config/apiUrl";
 const { Option } = Select;
 const { TextArea } = Input;
@@ -22,11 +22,11 @@ function AddArticle(props) {
   useEffect(() => {
     getTypeInfo();
 
-    //获取文章id
-    let tmpId = props.match.params.id
-    if(tmpId){
-      setArticleId(tmpId)
-      getArticleById(tmpId)
+    // 获取文章id
+    let tmpId = props.match.params.id;
+    if (tmpId) {
+      setArticleId(tmpId);
+      getArticleById(tmpId);
     }
   }, []);
   marked.setOptions({
@@ -52,40 +52,33 @@ function AddArticle(props) {
   };
 
   const getTypeInfo = () => {
-    axios({
-      method: "get",
-      url: servicePath.getTypeInfo,
-      withCredentials: true
-    }).then(res => {
-      if (res.data.data == "没有登录") {
-        localStorage.removeItem("openId");
-        props.history.push("/");
-      } else {
-        setTypeInfo(res.data.data);
-      }
+    axios.get(servicePath.getTypeInfo).then(res => {
+      setTypeInfo(res.data);
     });
   };
 
+  //设置分类
   const selectTypeHandler = value => {
     setSelectType(value);
   };
 
-  const getArticleById =(id)=>{
-    axios(servicePath.getArticleById+id,{withCredentials:true}).then(
-      res=>{
-        let articleInfo = res.data.data[0]
-        setArticleTitle(articleInfo.title)
-        setArticleContent(articleInfo.article_content)
-        let html = marked(articleInfo.article_content)
-        setMarkdownContent(html)
-        setIntroducemd(articleInfo.introduce)
-        let tmpInt = marked(articleInfo.introduce)
-        setIntroducehtml(tmpInt)
-        setShowDate(articleInfo.addTime)
-        setSelectType(articleInfo.type_id)
+  const getArticleById = id => {
+    axios(servicePath.getArticleById + id, { withCredentials: true }).then(
+      res => {
+        let articleInfo = res.data.data;
+        console.log(res);
+        setArticleTitle(articleInfo.title);
+        setArticleContent(articleInfo.article_content);
+        let html = marked(articleInfo.article_content);
+        setMarkdownContent(html);
+        setIntroducemd(articleInfo.introduce);
+        let tmpInt = marked(articleInfo.introduce);
+        setIntroducehtml(tmpInt);
+        setShowDate(articleInfo.addTime);
+        setSelectType(articleInfo.typeName);
       }
-    )
-  }
+    );
+  };
 
   const saveArticle = () => {
     if (!selectedType) {
@@ -97,58 +90,42 @@ function AddArticle(props) {
     } else if (!articleContent) {
       message.error("文章内容不能为空");
       return false;
-    }else if(!introducemd){
-        message.error('文章简介不能为空')
-        return false
-    }else if(!showDate){
-        message.error('发布日期不能为空')
-        return false
-    }else if(selectedType == '文章类别'){
-      message.error('请选择文章类别')
-      return false
+    } else if (!introducemd) {
+      message.error("文章简介不能为空");
+      return false;
+    } else if (!showDate) {
+      message.error("发布日期不能为空");
+      return false;
+    } else if (selectedType == "文章类别") {
+      message.error("请选择文章类别");
+      return false;
     }
-    
-    let dataProps = {}
-    dataProps.type_id = selectedType
-    dataProps.title = articleTitle
-    dataProps.article_content = articleContent
-    dataProps.introduce = introducemd
-    let dataText = showDate.replace('-','/')
-    dataProps.addTime = (new Date(dataText).getTime())/1000
+    let dataProps = {};
+    dataProps.typeName = selectedType;
+    dataProps.title = articleTitle;
+    dataProps.article_content = articleContent;
+    dataProps.introduce = introducemd;
+    let dataText = showDate.replace("-", "/");
+    dataProps.addTime = new Date(dataText).getTime() / 1000;
 
-    if(articleId == 0){
-      dataProps.view_count = 0
-      axios({
-        method:'post',
-        url:servicePath.addArticle,
-        data:dataProps,
-        withCredentials:true
-      }).then(
-        res=>{
-            setArticleId(res.data.insertId)
-            if(res.data.isSuccess){
-              message.success('文章添加成功')
-            }else{
-              message.error('文章添加失败')
-            }
+    if (articleId == 0) {
+      dataProps.view_count = 999;
+      axios.post(servicePath.addArticle, dataProps).then(res => {
+        setArticleId(res.data.insertId);
+        if (res.data.isSuccess) {
+          message.success("文章添加成功");
+        } else {
+          message.error("文章添加失败");
         }
-      )
-    }else{
-      dataProps.id=articleId
-      axios({
-        method:'post',
-        url:servicePath.updateArticle,
-        data:dataProps,
-        withCredentials:true
-      }).then(
-        res=>{
-          if(res.data.isSuccess){
-            message.success('文章保存成功')
-          }else{
-            message.error('文章保存失败')
-          }
-        }
-      )
+      });
+    } else {
+      axios
+        .post(servicePath.updateArticle + articleId,dataProps)
+        .then(res =>
+          res.data.isSuccess
+            ? message.success("文章保存成功")
+            : message.error("文章保存失败")
+        );
     }
   };
   return (
@@ -166,13 +143,14 @@ function AddArticle(props) {
           <Col span={4}>
             &nbsp;
             <Select
-              defaultValue={selectedType}
+              defaultValue={selectedType.data}
               size="large"
               onChange={selectTypeHandler}
+              placeholder="文章类型"
             >
               {typeInfo.map((item, index) => {
                 return (
-                  <Option key={index} value={item.Id}>
+                  <Option key={index} value={item.typeName} >
                     {item.typeName}
                   </Option>
                 );
@@ -203,7 +181,9 @@ function AddArticle(props) {
         <Row>
           <Col span="24">
             <Button size="large"> 暂存文章</Button>&nbsp;
-            <Button size="large" type="primary" onClick={saveArticle}>发布文章</Button>
+            <Button size="large" type="primary" onClick={saveArticle}>
+              发布文章
+            </Button>
             <br />
           </Col>
           <Col span="24">

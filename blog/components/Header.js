@@ -6,15 +6,16 @@ import Router from "next/router";
 import Link from "next/link";
 import axios from "axios";
 import servicePath from "../config/apiUrl";
+import keys from '../config/keys'
 const MyIcon = createFromIconfontCN({
-    scriptUrl: "//at.alicdn.com/t/font_1694685_r2yawq3keo.js" // 在 iconfont.cn 上生成
+    scriptUrl: keys.iconUrl // 在 iconfont.cn 上生成
     });
 const Header = () => {
 
     const [navArry,setNavArray] = useState([])
     useEffect(()=>{
         const fetchData = async ()=>{
-            const result = await axios(servicePath.getTypeInfo).then(res=>res.data.data)
+            const result = await axios(servicePath.getTypeInfo).then(res=>res.data)
             setNavArray(result)
         }
         fetchData()
@@ -42,7 +43,7 @@ const Header = () => {
             {
                 navArry.map(item=>{
                     return (
-                        <Menu.Item key={item.Id}>
+                        <Menu.Item key={item.typeName}>
                         <MyIcon type={item.icon} />
                         {item.typeName}
                       </Menu.Item>

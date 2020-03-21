@@ -1,10 +1,9 @@
-let ipUrl = 'http://127.0.0.1:7001/default/'
-
+let ipUrl = 'http://localhost:5000/api'
 let servicePath = {
-    getArticleList:ipUrl + 'getArticleList',  //首页接口
-    getArticleById:ipUrl + 'getArticleById/' ,  //详细页接口
-    getTypeInfo:ipUrl + 'getTypeInfo',   //获得文章类别接口
-    getListById:ipUrl + 'getListById/',//根据类别获得文章列表
+    getArticleList:ipUrl + '/profiles' ,  //  首页文章列表接口
+    getArticleById:ipUrl + '/profiles/',  // 文章详细页内容接口 ,需要接收参数
+    getTypeInfo:ipUrl + '/type',         // 文章分类信息
+    getListById:ipUrl + '/profiles/type/',         // 根据类别ID获得文章列表  
 }
 
 export default servicePath

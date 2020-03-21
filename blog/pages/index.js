@@ -4,9 +4,8 @@ import axios from "axios";
 import Link from "next/link";
 import Header from "../components/Header";
 import Author from "../components/Author";
-import Advert from "../components/Advert";
 import Footer from "../components/Footer";
-import { Row, Col, List } from "antd";
+import { Row, Col, List ,BackTop} from "antd";
 import {
   CalendarOutlined,
   YoutubeOutlined,
@@ -20,6 +19,9 @@ import "highlight.js/styles/monokai-sublime.css";
 const Home = list => {
   const [mylist, setMylist] = useState(list.data);
   const renderer = new marked.Renderer();
+  const getLocalTime =(nS)=> {     
+    return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');     
+  }
   marked.setOptions({
     renderer: renderer,
     gfm: true,
@@ -38,7 +40,7 @@ const Home = list => {
   return (
     <div>
       <Head>
-        <title>Create Next App</title>
+        <title>前端小菜鸟吖的技术博客</title>
       </Head>
       <Header />
       <Row className="comm-main" type="flex" justify="center">
@@ -51,7 +53,7 @@ const Home = list => {
               <List.Item>
                 <div className="list-title">
                   <Link
-                    href={{ pathname: "/detailed", query: { id: item.id } }}
+                    href={{ pathname: "/detailed", query: { id: item._id } }}
                   >
                     <a>{item.title}</a>
                   </Link>
@@ -59,7 +61,7 @@ const Home = list => {
                 <div className="list-icon">
                   <span>
                     <CalendarOutlined />
-                    {item.addTime}
+                    {getLocalTime(item.addTime)}
                   </span>
                   <span>
                     <YoutubeOutlined /> {item.typeName}
@@ -78,11 +80,11 @@ const Home = list => {
         </Col>
         <Col className="comm-right" xs={0} sm={0} md={7} lg={5} xl={4}>
           <Author />
-          <Advert />
         </Col>
       </Row>
 
       <Footer />
+      <BackTop />
     </div>
   );
 };

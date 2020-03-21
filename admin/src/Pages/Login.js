@@ -3,25 +3,26 @@ import '../static/css/Login.css'
 import {Card,Input,Button,Spin,message} from 'antd'
 import { createFromIconfontCN } from '@ant-design/icons';
 import 'antd/dist/antd.css'
-import axios from 'axios'
+import axios from '../config/http'
 import servicePath from '../config/apiUrl'
+import keys from '../config/keys'
 function Login(props){
     const IconFont = createFromIconfontCN({
-        scriptUrl: '//at.alicdn.com/t/font_1694685_d4cx4au3fp.js',
+        scriptUrl: keys.iconUrl,
       });
-    const [userName,setUserName] = useState('')
-    const [passWord,setPassWord] = useState('')
+    const [username,setUserName] = useState('')
+    const [password,setPassWord] = useState('')
     const [isLoading,setIsLoading] = useState(false)
 
     const checkLogin = ()=>{
         setIsLoading(true)
-        if(!userName){
+        if(!username){
             message.error("用户名不能为空")
             setTimeout(()=>{
                 setIsLoading(false)
             },500)
             return false
-        }else if(!passWord){
+        }else if(!password){
             message.error('密码不能为空')
             setTimeout(()=>{
                 setIsLoading(false)
@@ -29,28 +30,18 @@ function Login(props){
             return false
         }
         let dataProps = {
-            'userName':userName,
-            'passWord':passWord
+            'username':username,
+            'password':password
         }
-        axios({
-            method:'post',
-            url:servicePath.checkLogin,
-            data:dataProps,
-            header:{ 'Access-Control-Allow-Origin':'*' },
-            withCredentials:true
-        })
-        .then(
-            res=>{
+        axios.post(servicePath.login,dataProps)
+        .then(res=>{
                 setIsLoading(false)
-                if(res.data.data=='登录成功'){
-                    localStorage.setItem('openId',res.data.openId)
-                    props.history.push('/index')
-                }else{
-                    message.error('用户名密码错误')
-                }
-            }
+                localStorage.setItem('eleToken',res.data.token)
+                props.history.push('/index')
+            }       
         )
     }
+        
     return(
         <div className="login-div">
             <Spin tip="Loading..." spinning={isLoading}>
